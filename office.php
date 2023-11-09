@@ -5,7 +5,7 @@
 	<link rel="icon" type="image/png" href="assets/img/favicon.ico">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-	<title>Records App</title>
+	<title>Light Bootstrap Dashboard by Creative Tim</title>
 
 	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
     <meta name="viewport" content="width=device-width" />
@@ -29,8 +29,29 @@
     <?php
     require("Config/config.php");
     require("Config/db.php");
+
+    //define total number of results you want per page
+    $results_per_page = 10;
+
+    //find the total number of results/rows stored in database
+    $query = "SELECT * FROM office";
+    $result = mysqli_query($conn, $query);
+    $number_of_result = mysqli_num_rows($result);
+
+    //detremine the total number of pages available
+    $number_of_page = ceil($number_of_result / $results_per_page);
     
-    $query = "SELECT * FROM office ORDER BY name";
+    // determine which page number visitor is currently on
+    if(!isset($_GET['page'])) {
+        $page = 1;
+    } else{
+        $page = $_GET['page'];
+    }
+
+    // determine the sqll LIMIT starting number for the results on the display page
+    $page_first_result = ($page-1) * $results_per_page;
+    
+    $query = 'SELECT * FROM office ORDER BY name LIMIT '. $page_first_result . ',' . $results_per_page;
     $result = mysqli_query($conn, $query);
     $offices = mysqli_fetch_all($result, MYSQLI_ASSOC);
     mysqli_free_result($result);
@@ -66,8 +87,8 @@
                                     </a>
                                 </div>
                                 <div class="card-header ">
-                                    <h4 class="card-title">Office</h4>
-                                    <p class="card-category">Office Directory: Contact Info and Location.</p>
+                                    <h4 class="card-title">Offices</h4>
+                                    <p class="card-category">Here is a subtitle for this table</p>
                                 </div>
                                 <div class="card-body table-full-width table-responsive">
                                     <table class="table table-hover table-striped">
@@ -79,6 +100,7 @@
                                             <th>City</th>
                                             <th>Country</th>
                                             <th>Postal</th>
+                                            <th>Action</th>
                                         </thead>
                                         <tbody>
                                             <?php foreach($offices as $office) : ?>
@@ -90,6 +112,11 @@
                                                 <td><?php echo $office['city']; ?></td>
                                                 <td><?php echo $office['country']; ?></td>
                                                 <td><?php echo $office['postal']; ?></td>
+                                                <td>
+                                                    <a href="office-edit.php?id=<?php echo $office['id']; ?>">
+                                                        <button type="submit" class="btn btn-warning btn-fill pull-right">Edit</button>
+                                                    </a>
+                                                </td>
                                             </tr>
                                             <?php endforeach ?>
                                         </tbody>
@@ -99,6 +126,11 @@
                         </div>
 
                 </div>
+                <?php
+                        for($page=1; $page <= $number_of_page; $page++){
+                            echo '<a href = "office.php?page='. $page .'">' . $page .'</a>';
+                        }
+                    ?>
             </div>
         </div>
 

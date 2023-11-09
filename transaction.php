@@ -70,36 +70,42 @@
 
     <div class="main-panel">
     <?php include("BS3/navbar.php"); ?>
-        <div class="content">
-            <div class="container-fluid">
-                <div class="row">
-                <div class="col-md-12">
-                            <div class="card strpied-tabled-with-hover">
-                                <div class="card-header ">
-                                    <h4 class="card-title">Transactions</h4>
-                                    <p class="card-category">Transaction Details</p>
-                                </div>
-                                <div class="card-body table-full-width table-responsive">
-                                    <table class="table table-hover table-striped">
-                                        <thead>
-                                            <th>Datelog</th>
-                                            <th>Document code</th>
-                                            <th>Action</th>
-                                            <th>Office</th>
-                                            <th>Employee</th>
-                                            <th>Remarks</th>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach($transactions as $transaction) : ?>
-                                            <tr>
-                                                <td><?php echo $transaction['datelog']; ?></td>
-                                                <td><?php echo $transaction['documentcode']; ?></td>
-                                                <td><?php echo $transaction['action']; ?></td>
-                                                <td><?php echo $transaction['office_name']; ?></td>
-                                                <td><?php echo $transaction['employee_fullname']; ?></td>
-                                                <td><?php echo $transaction['remarks']; ?></td>
-                                            </tr>
-                                            <?php endforeach ?>
+    <div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card strpied-tabled-with-hover">
+                    <div class="card-header">
+                        <!-- Add New Transaction Button and Link -->
+                        <a href="transaction-add.php">
+                            <button type="button" class="btn btn-info btn-fill pull-right">Add New Transaction</button>
+                        </a>
+                        <!-- End Add New Transaction Button and Link -->
+                        
+                        <h4 class="card-title">Transactions</h4>
+                        <p class="card-category">Transaction Details</p>
+                    </div>
+                    <div class="card-body table-full-width table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <th>Datelog</th>
+                                <th>Document code</th>
+                                <th>Action</th>
+                                <th>Office</th>
+                                <th>Employee</th>
+                                <th>Remarks</th>
+                            </thead>
+                            <tbody>
+                                <?php foreach($transactions as $transaction) : ?>
+                                <tr>
+                                    <td><?php echo $transaction['datelog']; ?></td>
+                                    <td><?php echo $transaction['documentcode']; ?></td>
+                                    <td><?php echo $transaction['action']; ?></td>
+                                    <td><?php echo $transaction['office_name']; ?></td>
+                                    <td><?php echo $transaction['employee_fullname']; ?></td>
+                                    <td><?php echo $transaction['remarks']; ?></td>
+                                </tr>
+                                <?php endforeach ?>
                                         </tbody>
                                     </table>
                                 </div>

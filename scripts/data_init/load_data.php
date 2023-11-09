@@ -1,69 +1,67 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php'; // Include the Faker library
+require __DIR__ . '/vendor/autoload.php';
 
-// Database connection
-$conn = mysqli_connect("127.0.0.1", "root", "pass123", "recordsapp");
 
-if (!$conn) {
-    die("Connection Failed: " . mysqli_connect_error());
+$faker = Faker\Factory::create('en_PH');
+
+
+function customFakeSentence($faker, $wordCount = 6, $separator = ' ')
+{
+    $words = $faker->words($wordCount);
+    return ucfirst(implode($separator, $words)) . '.';
 }
 
-$faker = Faker\Factory::create('fil_PH'); // Create a Faker instance with Philippine Locale
+$host = '127.0.0.1';
+$database = 'records';
+$username = 'root';
+$password = 'pass123';
 
-// Generating and inserting fake data into the Employee table (200 rows)
-for ($i = 0; $i < 200; $i++) {
-    $lastName = $faker->lastName;
-    $firstName = $faker->firstName;
-    $office_id = rand(1, 50); // Replace with your logic to select a random office_id
-    $address = $faker->address;
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$database", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $sql = "INSERT INTO Employee (id, lastname, firstname, office_id, address) 
-            VALUES (NULL, '$lastName', '$firstName', $office_id, '$address')";
+    // employee table
+    for ($i = 1; $i <= 200; $i++) {
+        $lastname = $faker->lastName;
+        $firstname = $faker->firstName;
+        $office_id = $faker->numberBetween(1, 50);
+        $address = $faker->address;
 
-    if (mysqli_query($conn, $sql)) {
-        echo "Record $i inserted successfully into Employee table.<br>";
-    } else {
-        echo "Error: " . mysqli_error($conn);
+        
+        $stmt = $pdo->prepare("INSERT INTO employee (lastname, firstname, office_id, address) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$lastname, $firstname, $office_id, $address]);
     }
-}
 
-// Generating and inserting fake data into the Office table (50 rows)
-for ($i = 0; $i < 50; $i++) {
-    $name = $faker->company;
-    $contactnum = $faker->phoneNumber;
-    $email = $faker->email;
-    $address = $faker->address;
-    $city = $faker->city;
-    $country = $faker->country;
-    $postal = $faker->postcode;
+    // office table
+    for ($i = 1; $i <= 50; $i++) {
+        $name = $faker->company;
+        $contactnum = $faker->phoneNumber;
+        $email = $faker->email;
+        $address = $faker->address;
+        $city = $faker->city;
+        $country = $faker->country;
+        $postal = $faker->postcode;
 
-    $sql = "INSERT INTO Office (id, name, contactnum, email, address, city, country, postal) 
-            VALUES (NULL, '$name', '$contactnum', '$email', '$address', '$city', '$country', '$postal')";
-
-    if (mysqli_query($conn, $sql)) {
-        echo "Record $i inserted successfully into Office table.<br>";
-    } else {
-        echo "Error: " . mysqli_error($conn);
+        
+        $stmt = $pdo->prepare("INSERT INTO office (name, contactnum, email, address, city, country, postal) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$name, $contactnum, $email, $address, $city, $country, $postal]);
     }
-}
 
-// Generating and inserting fake data into the Transaction table (500 rows)
-for ($i = 0; $i < 500; $i++) {
-    $employee_id = rand(1, 200); // Replace with your logic to select a random employee_id
-    $office_id = rand(1, 50); // Replace with your logic to select a random office_id
-    $datelog = $faker->dateTimeThisDecade('now', 'Asia/Palawan')->format('Y-m-d H:i:s');
-    $action = $faker->randomElement(['IN', 'OUT', 'COMPLETE']);
-    $remarks = $faker->sentence;
-    $documentcode = $faker->numerify('DOC#####');
+    // transaction table
+    for ($i = 1; $i <= 500; $i++) {
+        $employee_id = $faker->numberBetween(1, 200);
+        $office_id = $faker->numberBetween(1, 50);
+        $datelog = $faker->dateTimeThisDecade('now', 'Asia/Manila')->format('Y-m-d H:i:s');
+        $action = $faker->randomElement(['IN', 'OUT', 'COMPLETE']);
+        $remarks = customFakeSentence($faker, 8); 
+        $documentcode = $faker->uuid;
 
-    $sql = "INSERT INTO Transaction (id, employee_id, office_id, datelog, action, remarks, documentcode) 
-            VALUES (NULL, $employee_id, $office_id, '$datelog', '$action', '$remarks', '$documentcode')";
-
-    if (mysqli_query($conn, $sql)) {
-        echo "Record $i inserted successfully into Transaction table.<br>";
-    } else {
-        echo "Error: " . mysqli_error($conn);
+        
+        $stmt = $pdo->prepare("INSERT INTO transaction (employee_id, office_id, datelog, action, remarks, documentcode) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$employee_id, $office_id, $datelog, $action, $remarks, $documentcode]);
     }
-}
 
-mysqli_close($conn);
+    echo "Fake data has been successfully loaded into the database.";
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}

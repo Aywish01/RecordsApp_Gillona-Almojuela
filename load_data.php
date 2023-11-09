@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php'; 
+require_once __DIR__ . '/vendor/autoload.php'; // Include the Faker library
 
 // Database connection
 $conn = mysqli_connect("127.0.0.1", "root", "pass123", "recordsapp");
@@ -14,7 +14,7 @@ $faker = Faker\Factory::create('fil_PH'); // Create a Faker instance with Philip
 for ($i = 0; $i < 200; $i++) {
     $lastName = $faker->lastName;
     $firstName = $faker->firstName;
-    $office_id = rand(1, 50); 
+    $office_id = rand(1, 50); // Replace with your logic to select a random office_id
     $address = $faker->address;
 
     $sql = "INSERT INTO Employee (id, lastname, firstname, office_id, address) 
@@ -49,8 +49,8 @@ for ($i = 0; $i < 50; $i++) {
 
 // Generating and inserting fake data into the Transaction table (500 rows)
 for ($i = 0; $i < 500; $i++) {
-    $employee_id = rand(1, 200); 
-    $office_id = rand(1, 50); 
+    $employee_id = rand(1, 200); // Replace with your logic to select a random employee_id
+    $office_id = rand(1, 50); // Replace with your logic to select a random office_id
     $datelog = $faker->dateTimeThisDecade('now', 'Asia/Palawan')->format('Y-m-d H:i:s');
     $action = $faker->randomElement(['IN', 'OUT', 'COMPLETE']);
     $remarks = $faker->sentence;
